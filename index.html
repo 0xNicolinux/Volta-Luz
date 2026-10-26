@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Volta, Luz!</title>
+  <meta name="theme-color" content="#0d1424">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Caveat:wght@600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="gl"></canvas>
+
+  <!-- ============ HUD ============ -->
+  <div id="hud" class="hide">
+    <div id="objective">
+      <p id="objT">Apagão!</p>
+      <p id="objW"></p>
+    </div>
+    <div id="status">
+      <div id="timer">00:00</div>
+      <div class="stat" title="Trapalhadas">💥 <b id="errs">0</b></div>
+      <div class="stat" title="Dicas usadas">🐱 <b id="hints">0</b></div>
+    </div>
+    <div id="cross"></div>
+    <svg id="ring" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="18" class="bg"/><circle id="ringC" cx="22" cy="22" r="18" class="fg"/></svg>
+    <div id="prompt"></div>
+    <div id="toast"></div>
+    <div id="bubble"><span class="cat">🐱</span><div><b>Fusível</b><p id="bubbleText"></p></div></div>
+    <div id="meter"><i>MULTÍMETRO</i><strong id="meterVal">0,0 V</strong><b id="meterWhat"></b><p id="meterNote"></p></div>
+    <div id="tools"></div>
+    <div id="keys">Tab caderno · H dica · F lanterna · Esc pausa</div>
+    <div id="touchUI">
+      <button id="tAct">Usar</button><button id="tTool">Ferramenta</button><button id="tFlash">Lanterna</button><button id="tHint">Dica</button><button id="tJournal">Caderno</button>
+    </div>
+  </div>
+
+  <!-- caderno de pistas -->
+  <div id="journal">
+    <div class="sheet"><header><h2>Caderno da vovó</h2><button id="jClose" class="btn small">Fechar (Tab)</button></header><div id="jBody"></div></div>
+  </div>
+
+  <!-- cartão de leitura -->
+  <div id="card"><div class="paper"><img id="cardImg" alt=""><h3 id="cardTitle"></h3><p id="cardText"></p><button id="cardClose" class="btn small">Entendi (E)</button></div></div>
+
+  <!-- ============ TELAS ============ -->
+  <section id="menu" class="screen">
+    <div class="menuCol">
+      <div class="bulb" aria-hidden="true"></div>
+      <h1>Volta, Luz!</h1>
+      <p class="lead">Apagão no bairro. A casa da vovó está no escuro e só você sabe achar o defeito, trocar o fusível e religar tudo na ordem certa.</p>
+      <div class="btns">
+        <button id="btnPlay" class="btn big">Jogar</button>
+        <button id="btnHow" class="btn">Como jogar</button>
+        <button id="btnOpts" class="btn">Opções</button>
+      </div>
+      <p id="menuBest" class="best"></p>
+      <p class="fine">Jogo de faz de conta. Na vida real, mexer em quadro de luz é trabalho para eletricista.</p>
+    </div>
+  </section>
+
+  <section id="how" class="screen hide">
+    <div class="panel wide">
+      <h2>Como jogar</h2>
+      <div class="cols">
+        <div>
+          <h3>Controles</h3>
+          <dl class="keysList">
+            <dt>W A S D</dt><dd>andar (Shift corre)</dd>
+            <dt>Mouse</dt><dd>olhar ao redor</dd>
+            <dt>Clique ou E</dt><dd>usar o que está na mira (segure em algumas tarefas)</dd>
+            <dt>1 a 5</dt><dd>ferramentas · 4 liga a lanterna</dd>
+            <dt>0 ou Q</dt><dd>mãos livres</dd>
+            <dt>Tab</dt><dd>caderno de pistas</dd>
+            <dt>H</dt><dd>dica do gato Fusível</dd>
+            <dt>Esc</dt><dd>pausa</dd>
+          </dl>
+        </div>
+        <div>
+          <h3>A missão</h3>
+          <ol>
+            <li>Pegue as <b>luvas</b> no armário roxo.</li>
+            <li>Abra a tampa dos <b>fusíveis</b> e ilumine com a lanterna.</li>
+            <li><b>Meça</b>, retire o fusível queimado, encaixe o reserva e aperte.</li>
+            <li>Ligue o <b>GERAL</b>.</li>
+            <li>Ache as 3 pistas e descubra a <b>ordem</b> dos 4 aparelhos.</li>
+            <li>Se pegar fogo, use o <b>extintor</b>!</li>
+          </ol>
+          <p class="mini">Errar custa só um tempinho e rende uma cena engraçada. Sem game over.</p>
+        </div>
+      </div>
+      <button class="btn back">Voltar</button>
+    </div>
+  </section>
+
+  <section id="opts" class="screen hide">
+    <div class="panel">
+      <h2>Opções</h2>
+      <label class="row">Música <input type="range" id="optMus" min="0" max="100"></label>
+      <label class="row">Efeitos <input type="range" id="optSfx" min="0" max="100"></label>
+      <label class="row">Qualidade gráfica
+        <select id="optQ"><option value="alta">Alta</option><option value="media">Média</option><option value="baixa">Baixa (PC fraco)</option></select></label>
+      <label class="row chk"><input type="checkbox" id="opt_auto"> Ajustar resolução sozinho para manter a fluidez</label>
+      <label class="row chk"><input type="checkbox" id="opt_bob"> Balanço da câmera ao andar</label>
+      <label class="row chk"><input type="checkbox" id="opt_sparkles"> Brilhinhos mostrando o que fazer</label>
+      <button class="btn back">Voltar</button>
+    </div>
+  </section>
+
+  <section id="pause" class="screen hide">
+    <div class="panel narrow">
+      <h2>Pausa</h2>
+      <div class="btns">
+        <button id="btnResume" class="btn big">Continuar</button>
+        <button id="pHow" class="btn">Como jogar</button>
+        <button id="pOpts" class="btn">Opções</button>
+        <button id="btnRestart" class="btn">Recomeçar (nova ordem)</button>
+        <button id="btnMenu" class="btn">Menu</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="end" class="screen hide">
+    <div class="panel narrow center">
+      <h2>A luz voltou!</h2>
+      <div id="endStars"></div>
+      <ul id="endStats"></ul>
+      <p class="mini">A ordem desta vez era:</p>
+      <div id="endOrder"></div>
+      <div class="learn">
+        <p><b>O que você viu:</b> o <b>fusível</b> é um "segurança" que queima para proteger o circuito; o <b>disjuntor</b> desarma sozinho quando passa corrente demais; ligar tudo de uma vez sobrecarrega; e água com eletricidade é mistura perigosa.</p>
+      </div>
+      <p id="endBest" class="best"></p>
+      <div class="btns row2"><button id="btnAgain" class="btn big">Jogar de novo</button><button id="btnEndMenu" class="btn">Menu</button></div>
+    </div>
+  </section>
+
+  <div id="fatal"></div>
+  <noscript><p style="color:#fff;padding:2rem">Ative o JavaScript para jogar.</p></noscript>
+  <p id="nogl">Seu navegador não oferece WebGL2. Tente uma versão recente do Chrome, Edge, Firefox ou Safari.</p>
+
+  <script src="script.js"></script>
+</body>
+</html>
