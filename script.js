@@ -1651,7 +1651,7 @@ function panelGuard(force) {
 }
 function pick(key, name, extra) {
   S.items = S.items || {}; W.items[key].visible = false; SFX.fx.pick();
-  if (TOOL_ICON[key]) { S.tools[key] = true; if (!S.sel) selectTool(key); }
+  if (TOOL_ICON[key]) { S.tools[key] = true; if (!S.sel && key !== 'flash') selectTool(key); }
   toast(name + ' no bolso!', 'good'); extra && extra();
 }
 function selectTool(k) {
@@ -2047,9 +2047,9 @@ function updateGame(dt, time) {
 
   // ---- viewmodel ----
   const vmList = []; G.vmObjs = vmList;
-  if (S.running && S.sel && W.toolMeshes[S.sel] && S.tools[S.sel] && !S.done) {
+  if (S.running && S.sel && S.sel !== 'flash' && W.toolMeshes[S.sel] && S.tools[S.sel] && !S.done) {
     const o = G.vm[S.sel] || (G.vm[S.sel] = new Obj(W.toolMeshes[S.sel], { spec: 0.3 })); const use = (G.spray || (holdInt && primary)) ? Math.sin(time * 22) * 0.012 : 0;
-    const k = { extintor: [0.3, -0.34, 0.66], multi: [0.2, -0.2, 0.42], screw: [0.2, -0.17, 0.45], pliers: [0.2, -0.17, 0.45] }[S.sel];
+    const k = { extintor: [0.3, -0.34, 0.66], multi: [0.2, -0.2, 0.42], screw: [0.2, -0.17, 0.45], pliers: [0.2, -0.17, 0.45], flash: [0.2, -0.17, 0.45] }[S.sel] || [0.2, -0.17, 0.45];
     const bob = Math.sin(G.bob) * 0.006 + use;
     o.pos = V3.add(V3.add(V3.add(cam.pos, V3.mul(right, k[0])), V3.mul(up, k[1] + bob)), V3.mul(cam.fwd, k[2]));
     o.rot = [G.pitch + (S.sel === 'multi' ? 0.25 : 0.1), G.yaw + (S.sel === 'extintor' ? 0 : -0.12), S.sel === 'multi' ? -0.1 : 0];
