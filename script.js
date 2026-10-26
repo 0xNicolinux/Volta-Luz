@@ -1288,7 +1288,7 @@ function buildWorld() {
   P.group({ pos: [1.7, 0, 2.72] }, () => { P.box(0, 0.7, 0, 0.7, 0.06, 0.45, PAL.woodLt); [[-0.3, -0.18], [0.3, -0.18], [-0.3, 0.18], [0.3, 0.18]].forEach(([x, z]) => P.box(x, 0.34, z, 0.05, 0.68, 0.05, PAL.wood)); P.box(0, 0.25, 0, 0.6, 0.04, 0.38, PAL.wood); });
   col(1.7, 2.72, 0.7, 0.45);
   const plant = (x, z, s) => { P.cyl(x, 0.2 * s, z, 0.2 * s, 0.15 * s, 0.4 * s, 8, PAL.pot); P.sphere(x, 0.65 * s, z, 0.32 * s, PAL.plant, { jit: 0.2, ry: 1.2 }); P.sphere(x + 0.14 * s, 0.95 * s, z - 0.05, 0.2 * s, C(0x6fc766), { jit: 0.22 }); col(x, z, 0.4 * s, 0.4 * s); };
-  plant(3.5, 2.75, 1.0); plant(-3.6, -1.55, 0.8);
+  plant(3.5, 2.75, 1.0);
   // mural de desenhos: papeis nos fundos; texturas carregadas depois (ver loadDrawings)
   // lâmpada de emergência + sinal de saída
   P.box(-0.95, 2.45, 2.95, 0.34, 0.12, 0.08, PAL.white); P.box(0.95, 2.45, 2.95, 0.34, 0.12, 0.08, PAL.white);
